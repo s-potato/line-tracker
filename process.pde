@@ -58,7 +58,7 @@ void draw() {
   textSize(24);
   fill(33);
   text("Status:", 180, 400);
-  text(ledStatus, 155, 440); // Prints the string comming from the Arduino
+  text(ledStatus, 0, 440); // Prints the string comming from the Arduino
 
   // If the button "Turn ON" is pressed
   if(mousePressed && mouseX>50 && mouseX<200 && mouseY>100 && mouseY<150){

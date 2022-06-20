@@ -1,4 +1,4 @@
-#define BASESPEED 150
+#define BASESPEED 40
 #define DURATION 5
 #define FAST 200
 #define SLOW 150
@@ -10,11 +10,11 @@ int prev = 0;
 
 int out1 = 2;
 int out2 = 4;
-int enA = 5;
+int enA = 9;
 
 int out3 = 3;
 int out4 = 7;
-int enB = 6;
+int enB = 10;
 
 int leftIn = 13;
 int centerIn = 12;
@@ -29,9 +29,9 @@ float previous_error = 0;
 float error = 0;
 float PID = 0;
 
-float Kp = 30;
-float Ki = 0;
-float Kd = 0;
+float Kp = 12;
+float Ki = 0.0;
+float Kd = 150;
 
 int read_pos() {
   int pos;
@@ -59,7 +59,7 @@ void pid_calc()
   previous_time = current_time;
   
   p = error;
-  i = i + error*timediff;
+  i = i + error;
   d = (error - previous_error)/timediff;
 
   previous_error = p;
@@ -69,6 +69,7 @@ void pid_calc()
 
 void setup()
 {
+    TCCR1B = TCCR1B & B11111000 | B00000101;
     // put your setup code here, to run once:
     pinMode(enA, OUTPUT);
     pinMode(out1, OUTPUT);
@@ -179,40 +180,44 @@ void goAuto()
     {
     case 2:
     {
-        Serial.println("MODE: STRAIGHT");
         goStraight();
 
         break;
     }
     case 3:
     {
-        Serial.println("MODE: LEFT");
         goLeft();
 
         break;
     }
     case 4:
     {
-        Serial.println("MODE: RIGHT");
         goRight();
 
         break;
     }
     case 5:
     {
-        Serial.println("MODE: BACK");
         goBack();
 
         break;
     }
     default:
     {
-        Serial.println("MODE: OFF");
         stopEngine();
 
         break;
     }
     }
+}
+
+
+int myconstrain(int value) {
+  if (value > 70)
+    return 70;
+  if (value < 10)
+    return 10;
+  return value;
 }
 
 void motor_control()
@@ -222,9 +227,10 @@ void motor_control()
     int left_motor_speed = BASESPEED + PID;
     
     // The motor speed should not exceed the max PWM value
-    constrain(left_motor_speed, 0, 255);
-    constrain(right_motor_speed, 0, 255);
+    left_motor_speed = myconstrain(left_motor_speed);
+    right_motor_speed = myconstrain(right_motor_speed);
     
+    Serial.println("p:" + String(p) + "i:" + String(i) + "d:" + String(d) + "pid:" + String(PID) + "l:" + String(left_motor_speed) + "r:" + String(right_motor_speed));
     analogWrite(enB, left_motor_speed);   //Left Motor Speed
     analogWrite(enA, right_motor_speed);  //Right Motor Speed
     digitalWrite(out1, HIGH);
@@ -248,34 +254,29 @@ void loop()
     switch (state)
     {
     case '1':
-        Serial.println("MODE: AUTO");
         pid_calc();
         motor_control();
         state = 1;
         break;
     case '2':
-        Serial.println("MODE: STRAIGHT");
         goStraight();
         state = 2;
         break;
     case '3':
-        Serial.println("MODE: LEFT");
         goLeft();
         state = 3;
         break;
     case '4':
-        Serial.println("MODE: RIGHT");
         goRight();
         state = 4;
         break;
     case '5':
-        Serial.println("MODE: BACK");
         goBack();
         state = 5;
         break;
     default:
-        Serial.println("MODE: OFF");
         stopEngine();
+        i = 0;
         state = 0;
         break;
     }
