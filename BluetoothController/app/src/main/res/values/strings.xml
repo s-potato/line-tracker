@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Bluetooth Controller</string>
+    <string name="bluetooth_not_supported">Your device don\'t have bluetooth!</string>
+    <string name="bluetooth_device_empty">Please connect to your device!</string>
+    <string name="bluetooth_not_permitted">Please enable bluetooth!</string>
+    <string name="speech_prompt">Please talk...</string>
+    <string name="speech_not_supported">Sorry! Your device doesn\'t support this feature</string>
+    <string name="command_success">%1$s#%2$s</string>
+</resources>
