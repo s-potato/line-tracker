@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ViewAdapter(private var context: Context, private var devices: Set<BluetoothDevice>) :
     RecyclerView.Adapter<ViewAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {     // create item
         var view: View = LayoutInflater.from(context).inflate(R.layout.item_layout, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {          // bind item with data
         val selectedDv = devices.elementAt(position)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -38,9 +38,9 @@ class ViewAdapter(private var context: Context, private var devices: Set<Bluetoo
         }
         holder.imageView.setImageResource(R.drawable.ic_bluetooth)
 
-        holder.itemView.setOnClickListener{
+        holder.itemView.setOnClickListener{         // set onClick: open controller activity for selected device
             val intent = Intent(context, ControllerActivity::class.java)
-            intent.putExtra("DEVICE", selectedDv)
+            intent.putExtra("DEVICE", selectedDv)           // put selected device to intent
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         }
@@ -50,7 +50,7 @@ class ViewAdapter(private var context: Context, private var devices: Set<Bluetoo
         return devices.size
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {        // 1 item class
         var textView: TextView
         var imageView: ImageView
 

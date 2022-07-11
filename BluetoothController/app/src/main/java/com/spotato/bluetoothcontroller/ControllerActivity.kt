@@ -48,7 +48,7 @@ class ControllerActivity : AppCompatActivity() {
         val stopButton: Button = findViewById(R.id.stop_button)
         val voiceButton: ImageButton = findViewById(R.id.voice_button)
 
-
+        // mapping button with command
         upButton.setOnClickListener {
             try {
                 outputStream.write("2".toByteArray())
@@ -108,7 +108,7 @@ class ControllerActivity : AppCompatActivity() {
         }
 
         try {
-            var device: BluetoothDevice =
+            var device: BluetoothDevice =                   // get device
                 intent.getParcelableExtra<BluetoothDevice>("DEVICE") as BluetoothDevice
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(
@@ -124,10 +124,10 @@ class ControllerActivity : AppCompatActivity() {
             } else {
                 title = device.name
             }
-            socket = device.createRfcommSocketToServiceRecord(UUID.fromString(uuid))
-            socket.connect()
-            inputStream = socket.inputStream
-            outputStream = socket.outputStream
+            socket = device.createRfcommSocketToServiceRecord(UUID.fromString(uuid))    // open socket with well-known uuid
+            socket.connect()                // open socket
+            inputStream = socket.inputStream // get inputStream for incoming data
+            outputStream = socket.outputStream // get outputStream for outgoing data
         } catch (e: Exception) {
             toastError()
             Log.d("Bluetooth", "onCreate: $e")
@@ -140,19 +140,19 @@ class ControllerActivity : AppCompatActivity() {
 
 
     private fun promptSpeechInput() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) // open recognizer intent for speech to text
         intent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,      // required
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM   // enable free form data
         )
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")       // using Vietnamese
         intent.putExtra(
-            RecognizerIntent.EXTRA_PROMPT,
+            RecognizerIntent.EXTRA_PROMPT,          // prompt to talk
             getString(R.string.speech_prompt)
         )
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)      // limit result
         try {
-            talkLauncher.launch(intent)
+            talkLauncher.launch(intent)     // launch recognizer intent
         } catch (a: ActivityNotFoundException) {
             Toast.makeText(
                 applicationContext,
@@ -165,11 +165,11 @@ class ControllerActivity : AppCompatActivity() {
 
     private var talkLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == Activity.RESULT_OK) {      // when intent return result
                 try {
                     val resultArray =
-                        result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    textToCommand(resultArray!![0])
+                        result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)    // get result data
+                    textToCommand(resultArray!![0])     // transcript text to command
                 } catch (e: Exception) {
                     Log.d("Exception", e.toString())
                 }
@@ -180,7 +180,7 @@ class ControllerActivity : AppCompatActivity() {
         val textView: TextView = findViewById(R.id.voice_text)
         textView.text = inText
         try {
-            val text = inText.lowercase()
+            val text = inText.lowercase()       // compare command
             if (text in upCommand) {
                 textView.text = getString(R.string.command_success, textView.text, "UP")
                 outputStream.write("2".toByteArray())

@@ -43,17 +43,17 @@ class MainActivity : AppCompatActivity() {
     private fun createListView() {
         val text: TextView = findViewById(R.id.textfield)
 
-        val btManager = this.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
+        val btManager = this.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager? // get bluetooth manager
 
         if (btManager == null) {
             text.text = R.string.bluetooth_not_supported.toString()
             return
         }
-        btAdapter = btManager.adapter
+        btAdapter = btManager.adapter   // get bluetooth adapter
 
-        if (btAdapter.state == BluetoothAdapter.STATE_OFF) {
+        if (btAdapter.state == BluetoothAdapter.STATE_OFF) {    // if bluetooth adapter is off, try to turn on
             val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            bluetoothLauncher.launch(intent)
+            bluetoothLauncher.launch(intent)    // open bluetooth request
         }
 
         if (ActivityCompat.checkSelfPermission(
@@ -66,25 +66,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        devices = btAdapter.bondedDevices
+        devices = btAdapter.bondedDevices   // get all bonded devices
         if (devices.isEmpty()) {
             text.visibility = View.VISIBLE
             text.text = getString(R.string.bluetooth_device_empty)
         } else {
-            val recyclerVew: RecyclerView = findViewById(R.id.recycler_view)
+            val recyclerVew: RecyclerView = findViewById(R.id.recycler_view)    // create view from devices list
             recyclerVew.layoutManager = LinearLayoutManager(this)
             recyclerVew.adapter = ViewAdapter(applicationContext, devices)
             text.visibility = View.INVISIBLE
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {    // create menu layout
         var menuInflater: MenuInflater = menuInflater
         menuInflater.inflate(R.menu.menu_layout, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {   // when reload button is clicked, reload
         when (item.itemId) {
             R.id.menu_reload -> createListView()
         }
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
     private var bluetoothLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == Activity.RESULT_OK) {  // when request result OK -> reload this activity
                 finish()
                 overridePendingTransition(0, 0)
                 startActivity(this.intent)
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     private val requestBluetoothPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
-            finish()
+            finish()                    // reload this activity to check permission again
             overridePendingTransition(0, 0)
             startActivity(this.intent)
             overridePendingTransition(0, 0)
