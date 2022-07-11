@@ -1,7 +1,7 @@
 #define BASESPEED 40
 #define DURATION 5
-#define FAST 200
-#define SLOW 150
+#define FAST 100
+#define SLOW 40
 
 int state = 0;
 int statePrev = 0;
